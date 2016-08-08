@@ -1,12 +1,13 @@
 {
   "name": "front-matter-stream",
   "version": "0.1.0",
-  "description": "",
+  "description": "Capture YAML front matter from a stream",
+  "repository": "github:shawnbot/front-matter-stream",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
-  "keywords": [],
+  "keywords": ["front", "matter", "frontmatter", "yaml", "jekyll"],
   "author": "Shawn Allen <shawn.allen@gsa.gov>",
   "license": "CC0-1.0",
   "dependencies": {
