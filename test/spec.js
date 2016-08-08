@@ -2,6 +2,7 @@ const assert = require('assert')
 const fs = require('fs')
 const parse = require('../')
 const path = require('path')
+const concat = require('concat-stream')
 
 const getFixturePath = function(filename) {
   return path.join(__dirname, 'fixture', filename)
@@ -18,14 +19,10 @@ describe('stream pipe', function() {
         called = true
         assert.deepEqual(data, {foo: 'bar'})
       })
-      .on('data', function(chunk) {
-        buffer.push(chunk)
-      })
-      .on('end', function(content) {
-        buffer = Buffer.concat(buffer).toString()
-        assert.equal(buffer.trim(), 'baz')
+      .pipe(concat(function(buffer) {
+        assert.equal(String(buffer).trim(), 'baz')
         done()
-      })
+      }))
   })
 
   it('parses without front matter', function() {
@@ -35,13 +32,41 @@ describe('stream pipe', function() {
       .on('frontmatter', function(data) {
         assert.deepEqual(undefined, data)
       })
-      .on('data', function(chunk) {
-        buffer.push(chunk)
+      .pipe(concat(function(buffer) {
+        assert.equal(String(buffer).trim(), 'foo bar baz')
+        done()
+      }))
+  })
+
+  it('throws errors on malformed frontmatter', function(done) {
+    var buffer = []
+    fs.createReadStream(getFixturePath('malformed-data.md'))
+      .pipe(parse())
+      .on('frontmatter', function(data) {
+        assert.deepEqual(undefined, data)
+      })
+      .on('error', function(error) {
+        assert(error)
+        done()
       })
       .on('end', function(content) {
-        buffer = Buffer.concat(buffer).toString()
-        assert.equal(buffer.trim(), 'foo bar baz')
+        throw new Error('we should not have content here')
+      })
+  })
+
+  it('throws errors on un-closed frontmatter', function(done) {
+    var buffer = []
+    fs.createReadStream(getFixturePath('malformed-unclosed.md'))
+      .pipe(parse({debug: true}))
+      .on('frontmatter', function(data) {
+        assert.deepEqual(undefined, data)
+      })
+      .on('error', function(error) {
+        assert(error)
         done()
+      })
+      .on('end', function(content) {
+        throw new Error('we should not have content here')
       })
   })
 
