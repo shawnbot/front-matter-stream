@@ -1,0 +1,19 @@
+{
+  "name": "front-matter-stream",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "Shawn Allen <shawn.allen@gsa.gov>",
+  "license": "CC0-1.0",
+  "dependencies": {
+    "js-yaml": "^3.6.1",
+    "through2": "^2.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  }
+}
